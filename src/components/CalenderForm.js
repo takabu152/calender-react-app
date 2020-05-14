@@ -44,6 +44,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+
 const getCalendarArray = date => {
   const sundays = eachWeekOfInterval({
     start: startOfMonth(date),
@@ -69,6 +73,21 @@ const useStyles = makeStyles(theme => ({
   },
   buttonMargin: {
     margin: theme.spacing(1),
+  },
+  card_root: {
+    minWidth: 100,
+    marginBottom: 10,
+  },
+  card_bullet: {
+    display: 'inline-block',
+    margin: '0 2px',
+    transform: 'scale(0.8)',
+  },
+  card_title: {
+    fontSize: 14,
+  },
+  card_pos: {
+    marginBottom: 12,
   },
 }))
 // 追加ここまで
@@ -205,6 +224,8 @@ const CalenderForm = () => {
       })
     }
 
+    let eventdata
+
     return (
     <>
     <div>
@@ -239,9 +260,25 @@ const CalenderForm = () => {
               <TableRow key={rowNum}>
                 {weekRow.map(date => (
                   <CalendarTableCell key={getDay(date)} wday={getDay(date)} isTargetMonth={isSameMonth(date, statetargetdate)} align="center">
-                    {getDate(date)}
-                    <div></div>
-                    {(state.events.filter(event => event.day == date)).map((event) => event.title)}
+                    {getDate(date)}日
+                    {(state.events.filter(event => event.day == date)).map((event) => 
+                      <>
+                      <Card className={classes.card_root}>
+                        <CardContent>
+                          <Typography className={classes.card_title} color="textSecondary" gutterBottom>
+                            Title:{event.title}
+                          </Typography>
+                          <Typography variant="h5" component="h2">
+                            Place:<div>{event.place}</div>
+                          </Typography>
+                        </CardContent>
+                        <CardActions>
+                          <Button size="small">edit</Button>
+                        </CardActions>
+                      </Card>
+                      </>
+                      )
+                    } 
                     <Button  variant="outlined" size="small" className={classes.buttonMargin} variant="contained" value ={date} onClick={handleClickOpen}>+</Button>
                   </CalendarTableCell>
                 ))}
