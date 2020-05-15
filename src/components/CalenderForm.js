@@ -1,6 +1,6 @@
 import React ,{useContext,useState} from 'react'
 import {
-  SET_TARGETDATE,CREATE_EVENT
+  SET_TARGETDATE,CREATE_EVENT,DELETE_EVENT
 } from '../actions'
 
 import AppContext from '../contexts/AppContext'
@@ -74,9 +74,16 @@ const useStyles = makeStyles(theme => ({
   buttonMargin: {
     margin: theme.spacing(1),
   },
-  card_root: {
+  root: {
     minWidth: 100,
     marginBottom: 10,
+    paddingLeft: 0,
+    paddingRight:0,
+    paddingTop:0,
+    paddingBottom: 0,
+    "&:last-child": {
+      paddingBottom: 0
+    }
   },
   card_bullet: {
     display: 'inline-block',
@@ -234,9 +241,21 @@ const CalenderForm = () => {
       setOpen(false)
     }
 
+    const deleteOnClick = (e) => {
+      
+      if (window.confirm('削除します。よろしいですか？'))
+      {
+        console.log(e.currentTarget.value)
+        dispatch({
+          type:DELETE_EVENT,
+          id:e.currentTarget.value
+        })
+      }
+    }
+
     // pop画面からstateのeventsに登録する
     const handleSubscribe = () =>{
-      console.log(currentDate)
+      // console.log(currentDate)
       dispatch({
         type:CREATE_EVENT,
         day:currentDate,
@@ -259,7 +278,7 @@ const CalenderForm = () => {
         // console.log(e.target)
         // console.log(e.target.value)
 
-        console.log(date)
+        // console.log(date)
         
         dispatch({
           type:CREATE_EVENT,
@@ -317,32 +336,26 @@ const CalenderForm = () => {
             {calendar.map((weekRow, rowNum) => (
               <TableRow key={rowNum}>
                 {weekRow.map(date => (
-                  <CalendarTableCell key={getDay(date)} wday={getDay(date)} isTargetMonth={isSameMonth(date, statetargetdate)} align="center">
+                  <CalendarTableCell key={getDay(date)} wday={getDay(date)} isTargetMonth={isSameMonth(date, statetargetdate)} align="center" valign="top">
                     {getDate(date)}日
-                    {console.log(timeIso8601(date))}
                     {(state.events.filter(event => event.day === timeIso8601(date))).map((event) => 
                       <>
-                      {console.log('aa')}
-                      <Card className={classes.card_root} key = {event.id}>
+                      <Card className={classes.root} key = {event.id}>
                         <CardContent >
                           <div hidden id = {event.id}>{event.id}</div>
-                          <div className={eventGridClasses.root}>
-                            <Grid container spacing={1}>
-                              <Grid item xs>
-                                <Paper variant="outlined" className={eventGridClasses.paper}>
-                                  <Typography className={classes.card_title} color="textSecondary" gutterBottom >
-                                    {event.title}
-                                  </Typography>
-                                </Paper>
-                              </Grid>
-                              <Grid item xs>
-                                <Paper variant="outlined" className={eventGridClasses.paper}>
-                                <Button size="small" color="primary" onClick={handleClickEdit} value={event.id}>detail</Button>
-                                </Paper>
-                              </Grid>
-                            </Grid>
-                          </div>
+                          <Typography className={classes.card_title} color="textSecondary" gutterBottom >
+                            {event.title}
+                          </Typography> 
+                          {/* <Button size="small" color="primary" onClick={handleClickEdit} value={event.id}>detail</Button> */}
                         </CardContent>
+                        <CardActions>
+                          <Button color="primary">
+                            detail
+                          </Button>
+                          <Button color="secondary" value ={event.id} onClick={deleteOnClick}>
+                            delete
+                          </Button>
+                        </CardActions>
                       </Card>
                       </>
                       )
