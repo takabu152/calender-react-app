@@ -17,7 +17,7 @@ const events = (state = [],action) => {
             return [...state,{id,...event}]
         case DELETE_EVENT:
             //filterもmapと同じでstateの中の配列を展開して処理して配列を戻す
-            return state.filter(event => event.id != action.id)
+            return state.filter(event => event.id !== action.id)
         default:
             return state
     }

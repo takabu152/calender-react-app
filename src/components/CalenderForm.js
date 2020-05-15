@@ -4,7 +4,7 @@ import {
 } from '../actions'
 
 import AppContext from '../contexts/AppContext'
-
+import { timeIso8601 } from '../utils'
 //日付操作のライブラリの読み込み
 import format from 'date-fns/format'
 import getDate from 'date-fns/getDate'
@@ -119,6 +119,17 @@ const useCalendarCellStyles = makeStyles(theme => ({
   },
 }))
 
+const useEventGridStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+}));
+
 function CalendarTableCell(props) {
   const {wday, isTargetMonth, children, ...other} = props
   const classes = useCalendarCellStyles(props)
@@ -129,23 +140,29 @@ const CalenderForm = () => {
     //prop経由だったstateとdispatchをコンテキストで受け取る 
     const {state,dispatch} = useContext(AppContext)
     console.log(state)
+
+    
+
     const statetargetdate = Date.parse(state.targetdate)
     
     const calendar = getCalendarArray(Date.parse(state.targetdate))
 
     const classes = useStyles() // 追加
 
+    const eventGridClasses = useEventGridStyles();
+
     // popover関連のstate
     const [open, setOpen] = React.useState(false);
     const [currentDate,setCurrentDate] = React.useState(null);
+    const [currentTitle,setCurrentTitle] = React.useState('');
     
     
-    const [startTime, setStartTime] = React.useState('')
+    const [startTime, setStartTime] = React.useState('00:00')
     const handleStartTimeChange = (event) => {
       setStartTime(event.target.value)
     }
 
-    const [endTime, setEndTime] = React.useState('')
+    const [endTime, setEndTime] = React.useState('00:00')
     const handleEndTimeChange = (event) => {
       setEndTime(event.target.value)
     }
@@ -175,7 +192,9 @@ const CalenderForm = () => {
     const [allDayChecked, setChecked] = React.useState(false);
     // Checkboxの操作
     const handleCheckboxChange = (event) => {
-      setChecked(event.target.checked);
+      
+      setChecked(event.target.checked)
+      // console.log(allDayChecked)
     }
 
     // popoverclick
@@ -189,7 +208,20 @@ const CalenderForm = () => {
     // pop画面を開く
     const handleClickOpen = (e) => {
       e.preventDefault()
-      setCurrentDate(e.currentTarget.value)
+      setCurrentDate(timeIso8601(e.currentTarget.value))
+
+      //state初期化
+      // 今から開く日付のデータがあれば、それをセット
+      // なければ、空白にしてセット
+      setOpen(true)
+    }
+
+    const handleClickEdit = (e) => {
+      e.preventDefault()
+      //setCurrentDate(e.currentTarget.value)
+
+      // 各stateに値をセットすることで画面に表示されるはず。
+
 
       //state初期化
       // 今から開く日付のデータがあれば、それをセット
@@ -204,16 +236,45 @@ const CalenderForm = () => {
 
     // pop画面からstateのeventsに登録する
     const handleSubscribe = () =>{
+      console.log(currentDate)
       dispatch({
         type:CREATE_EVENT,
         day:currentDate,
         title:title,
         place:place,
-        allday:allDayChecked,
+        allDayChecked:allDayChecked,
         starttime:startTime,
-        endtime:endTime
+        endtime:endTime,
+        mem:memo,
+        URL:URL
       })
       setOpen(false)
+    }
+
+    const currenTitleOnKeyDown = (date,e) =>{
+      
+      // Enterキーを押した時に新規登録する。
+      if (e.keyCode === 13)
+      {
+        // console.log(e.target)
+        // console.log(e.target.value)
+
+        console.log(date)
+        
+        dispatch({
+          type:CREATE_EVENT,
+          day:timeIso8601(date),
+          title:e.target.value,
+          place:'',
+          allDayChecked:false,
+          starttime:'00:00',
+          endtime:'00:00',
+          mem:'',
+          URL:''
+        })
+
+        e.target.value = ''
+      }
     }
   
     // pop画面に日付を引き渡すため
@@ -224,11 +285,8 @@ const CalenderForm = () => {
       })
     }
 
-    let eventdata
-
     return (
     <>
-    <div>
       <CssBaseline />  {/* 追加 */}
       <Paper className={classes.paper}>  {/* 追加 */}
         <Grid container justify="space-between">
@@ -261,25 +319,36 @@ const CalenderForm = () => {
                 {weekRow.map(date => (
                   <CalendarTableCell key={getDay(date)} wday={getDay(date)} isTargetMonth={isSameMonth(date, statetargetdate)} align="center">
                     {getDate(date)}日
-                    {(state.events.filter(event => event.day == date)).map((event) => 
+                    {console.log(timeIso8601(date))}
+                    {(state.events.filter(event => event.day === timeIso8601(date))).map((event) => 
                       <>
-                      <Card className={classes.card_root}>
-                        <CardContent>
-                          <Typography className={classes.card_title} color="textSecondary" gutterBottom>
-                            Title:{event.title}
-                          </Typography>
-                          <Typography variant="h5" component="h2">
-                            Place:<div>{event.place}</div>
-                          </Typography>
+                      {console.log('aa')}
+                      <Card className={classes.card_root} key = {event.id}>
+                        <CardContent >
+                          <div hidden id = {event.id}>{event.id}</div>
+                          <div className={eventGridClasses.root}>
+                            <Grid container spacing={1}>
+                              <Grid item xs>
+                                <Paper variant="outlined" className={eventGridClasses.paper}>
+                                  <Typography className={classes.card_title} color="textSecondary" gutterBottom >
+                                    {event.title}
+                                  </Typography>
+                                </Paper>
+                              </Grid>
+                              <Grid item xs>
+                                <Paper variant="outlined" className={eventGridClasses.paper}>
+                                <Button size="small" color="primary" onClick={handleClickEdit} value={event.id}>detail</Button>
+                                </Paper>
+                              </Grid>
+                            </Grid>
+                          </div>
                         </CardContent>
-                        <CardActions>
-                          <Button size="small">edit</Button>
-                        </CardActions>
                       </Card>
                       </>
                       )
                     } 
-                    <Button  variant="outlined" size="small" className={classes.buttonMargin} variant="contained" value ={date} onClick={handleClickOpen}>+</Button>
+                    {/* <Button  variant="outlined" size="small" className={classes.buttonMargin} variant="contained" value ={date} onClick={handleClickOpen}>+</Button> */}
+                    <TextField id={format(date,'yyyyMMdd')} label="New Event" onKeyDown={(e) => currenTitleOnKeyDown(date, e)}/>
                   </CalendarTableCell>
                 ))}
               </TableRow>
@@ -316,6 +385,7 @@ const CalenderForm = () => {
             inputProps={{
               step: 300, // 5 min
             }}
+            value ={startTime}
             onChange={handleStartTimeChange}
           />
           <TextField
@@ -330,6 +400,7 @@ const CalenderForm = () => {
             inputProps={{
               step: 300, // 5 min
             }}
+            value = {endTime}
             onChange={handleEndTimeChange}
           />
           <TextField
@@ -339,6 +410,7 @@ const CalenderForm = () => {
             label="Title"
             type="text"
             fullWidth
+            value={title}
             onChange={handleTitleChange}
           />
           <TextField
@@ -347,6 +419,7 @@ const CalenderForm = () => {
             label="Place"
             type="text"
             fullWidth
+            value={place}
             onChange={handlePlaceChange}
           />
           <TextField
@@ -357,6 +430,7 @@ const CalenderForm = () => {
             fullWidth
             multiline
             rowsMax={4}
+            value={memo}
             onChange={handleMemoChange}
           />
           <TextField
@@ -365,6 +439,7 @@ const CalenderForm = () => {
           label="URL"
           type="text"
           fullWidth
+          value={URL}
           onChange={handleURLChange}
         />
         </DialogContent>
@@ -377,7 +452,7 @@ const CalenderForm = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+
     </>
     )
 }

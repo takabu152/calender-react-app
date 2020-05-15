@@ -18,8 +18,6 @@ const App = () => {
     targetdate:new Date()
   }
 
-  console.log(initialState.targetdate)
-
   const [state,dispatch]=useReducer(reducer,initialState)
 
   // useEffectはstateに変化があった時に実行される。
