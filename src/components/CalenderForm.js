@@ -48,6 +48,20 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 
+import HTML5Backend from 'react-dnd-html5-backend'
+import TouchBackend from 'react-dnd-touch-backend';
+// import { DragDropContext } from 'react-dnd'
+
+const isTouchDevice = () => {
+  /* タッチデバイス判定 */
+  var result = false;
+  if (window.ontouchstart === null) {
+    result = true;
+  }  
+  return result;
+ }
+
+
 const getCalendarArray = date => {
   const sundays = eachWeekOfInterval({
     start: startOfMonth(date),
@@ -490,3 +504,4 @@ const CalenderForm = () => {
 }
 
 export default CalenderForm
+// export default　DragDropContext(isTouchDevice() ? TouchBackend : HTML5Backend)(CalenderForm)
