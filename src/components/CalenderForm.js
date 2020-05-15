@@ -166,6 +166,7 @@ const CalenderForm = () => {
     
     const [startTime, setStartTime] = React.useState('00:00')
     const handleStartTimeChange = (event) => {
+      console.log(event.target.value)
       setStartTime(event.target.value)
     }
 
@@ -186,6 +187,7 @@ const CalenderForm = () => {
 
     const [memo, setMemo] =React.useState('')
     const handleMemoChange = (event) => {
+      console.log(event.target.value)
       setMemo(event.target.value)
     }
 
@@ -193,6 +195,8 @@ const CalenderForm = () => {
     const handleURLChange = (event) => {
       setURL(event.target.value)
     }
+
+    const [id, setId] =React.useState(0)
     
     
     // Checkbox関連のstate
@@ -213,26 +217,32 @@ const CalenderForm = () => {
     // };
  
     // pop画面を開く
-    const handleClickOpen = (e) => {
-      e.preventDefault()
-      setCurrentDate(timeIso8601(e.currentTarget.value))
+    // const handleClickOpen = (e) => {
+    //   e.preventDefault()
+    //   setCurrentDate(timeIso8601(e.currentTarget.value))
 
-      //state初期化
-      // 今から開く日付のデータがあれば、それをセット
-      // なければ、空白にしてセット
-      setOpen(true)
-    }
+    //   //state初期化
+    //   // 今から開く日付のデータがあれば、それをセット
+    //   // なければ、空白にしてセット
+    //   setOpen(true)
+    // }
 
     const handleClickEdit = (e) => {
-      e.preventDefault()
+
       //setCurrentDate(e.currentTarget.value)
-
-      // 各stateに値をセットすることで画面に表示されるはず。
-
-
-      //state初期化
-      // 今から開く日付のデータがあれば、それをセット
-      // なければ、空白にしてセット
+      //画面表示する際、内容を表示させる。
+      (state.events.filter(event => event.id == e.currentTarget.value)).map((event) => {
+        setTitle(event.title)
+        setPlace(event.place)
+        setMemo(event.memo)
+        setURL(event.url)
+        setStartTime(event.startTime)
+        setEndTime(event.endTime)
+        setChecked(event.allDayChecked)
+        setId(event.id)
+        setCurrentDate(event.day)
+        }
+      )
       setOpen(true)
     }
 
@@ -242,7 +252,7 @@ const CalenderForm = () => {
     }
 
     const deleteOnClick = (e) => {
-      
+      e.preventDefault()
       if (window.confirm('削除します。よろしいですか？'))
       {
         console.log(e.currentTarget.value)
@@ -256,16 +266,24 @@ const CalenderForm = () => {
     // pop画面からstateのeventsに登録する
     const handleSubscribe = () =>{
       // console.log(currentDate)
+      // 仕様的にUpdateしかあり得なくなってる。一度削除して再登録？
+      // それとも更新？？
+
+      dispatch({
+        type:DELETE_EVENT,
+        id:id
+      })
+
       dispatch({
         type:CREATE_EVENT,
         day:currentDate,
         title:title,
         place:place,
+        url:URL,
         allDayChecked:allDayChecked,
-        starttime:startTime,
-        endtime:endTime,
-        mem:memo,
-        URL:URL
+        startTime:startTime,
+        endTime:endTime,
+        memo:memo
       })
       setOpen(false)
     }
@@ -285,9 +303,10 @@ const CalenderForm = () => {
           day:timeIso8601(date),
           title:e.target.value,
           place:'',
+          url:'',
           allDayChecked:false,
-          starttime:'00:00',
-          endtime:'00:00',
+          startTime:'00:00',
+          endTime:'00:00',
           mem:'',
           URL:''
         })
@@ -349,7 +368,7 @@ const CalenderForm = () => {
                           {/* <Button size="small" color="primary" onClick={handleClickEdit} value={event.id}>detail</Button> */}
                         </CardContent>
                         <CardActions>
-                          <Button color="primary">
+                          <Button color="primary" value = {event.id} onClick={handleClickEdit}>
                             detail
                           </Button>
                           <Button color="secondary" value ={event.id} onClick={deleteOnClick}>

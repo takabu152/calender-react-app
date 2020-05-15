@@ -7,9 +7,11 @@ const events = (state = [],action) => {
                 day:action.day,
                 title:action.title,
                 place:action.place,
+                url:action.url,
                 allDayChecked:action.allDayChecked,
-                starttime:action.starttime,
-                endtime:action.endtime
+                startTime:action.startTime,
+                endTime:action.endTime,
+                memo:action.memo
             }
             const length = state.length
             const id = length === 0 ? 1 : state[length - 1].id +1
