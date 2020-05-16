@@ -326,6 +326,7 @@ const CalenderForm = () => {
           mem:'',
           URL:''
         })
+        console.log('a')
 
         e.target.value = ''
       }
