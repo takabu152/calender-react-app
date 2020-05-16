@@ -58,9 +58,8 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 
-import HTML5Backend from 'react-dnd-html5-backend'
-import TouchBackend from 'react-dnd-touch-backend';
-// import { DragDropContext } from 'react-dnd'
+import { useDrag, useDrop, DndProvider } from "react-dnd"
+import Backend from "react-dnd-html5-backend"
 
 const isTouchDevice = () => {
   /* タッチデバイス判定 */
@@ -404,7 +403,7 @@ const CalenderForm = () => {
                   <CalendarTableCell key={getDay(date)} wday={getDay(date)} isTargetMonth={isSameMonth(date, statetargetdate)} align="center" valign="top">
                     {getDate(date)}日
                     {(state.events.filter(event => event.day === timeIso8601(date))).map((event) => 
-
+                      //ここをdrag$dropできるようにしたい。
                       <EventCardForm id = {event.id} title = {event.title} />
                       // <>
                       // <Card className={classes.root} key = {event.id}>
