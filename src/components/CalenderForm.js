@@ -395,6 +395,8 @@ const CalenderForm = () => {
                     } 
                     {/* <Button  variant="outlined" size="small" className={classes.buttonMargin} variant="contained" value ={date} onClick={handleClickOpen}>+</Button> */}
                     <TextField id={format(date,'yyyyMMdd')} label="+" onKeyDown={(e) => currenTitleOnKeyDown(date, e)}/>
+                    <div>aaaaaa</div>
+                  
                   </CalendarTableCell>
                 ))}
               </TableRow>
