@@ -17,6 +17,7 @@ const App = () => {
     events:[],
     targetdate:new Date(),
     inputEventObject:{
+      id:0,
       day:null,
       title:'',
       place:'',

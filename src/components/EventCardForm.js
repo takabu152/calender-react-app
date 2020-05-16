@@ -103,6 +103,7 @@ const EventCardForm = (props) => {
           // stateにデータをセットする。
           dispatch({
               type:SET_INPUTEVENTOBJECT,
+              id:event.id,
               day:event.day,
               title:event.title,
               place:event.place,

@@ -1,6 +1,14 @@
 import React ,{useContext,useState} from 'react'
 import {
-  SET_TARGETDATE,CREATE_EVENT,DELETE_EVENT
+  SET_TARGETDATE,CREATE_EVENT,DELETE_EVENT,SET_POPOVERSTATE,
+  SET_DAY ,
+  SET_TITLE,
+  SET_PLACE,
+  SET_URL,
+  SET_ALLDAYCHECKED,
+  SET_STARTTIME,
+  SET_ENDTIME,
+  SET_MEMO
 } from '../actions'
 
 import AppContext from '../contexts/AppContext'
@@ -167,49 +175,76 @@ const CalenderForm = () => {
     const classes = useStyles() // 追加
 
     // popover関連のstate
-    const [open, setOpen] = React.useState(false);
+    //const [open, setOpen] = React.useState(false);
     const [currentDate,setCurrentDate] = React.useState(null);
     const [currentTitle,setCurrentTitle] = React.useState('');
-    const [startTime, setStartTime] = React.useState('00:00')
+    //const [startTime, setStartTime] = React.useState('00:00')
     const handleStartTimeChange = (event) => {
-      console.log(event.target.value)
-      setStartTime(event.target.value)
+      dispatch({
+        type:SET_STARTTIME,
+        startTime:event.target.value
+      })
+      //console.log(event.target.value)
+      //setStartTime(event.target.value)
     }
 
-    const [endTime, setEndTime] = React.useState('00:00')
+    //const [endTime, setEndTime] = React.useState('00:00')
     const handleEndTimeChange = (event) => {
-      setEndTime(event.target.value)
+      dispatch({
+        type:SET_ENDTIME,
+        endTime:event.target.value
+      })
+      //setEndTime(event.target.value)
     }
 
-    const [title, setTitle] = React.useState('')
     const handleTitleChange = (event) => {
-      setTitle(event.target.value)
+      dispatch({
+        type:SET_TITLE,
+        title:event.target.value
+      })
+      // setTitle(event.target.value)
     }
 
-    const [place, setPlace] =React.useState('')
+    //const [place, setPlace] =React.useState('')
     const handlePlaceChange = (event) => {
-      setPlace(event.target.value)
+      dispatch({
+        type:SET_PLACE,
+        place:event.target.value
+      })
     }
 
-    const [memo, setMemo] =React.useState('')
+    // const [memo, setMemo] =React.useState('')
     const handleMemoChange = (event) => {
-      console.log(event.target.value)
-      setMemo(event.target.value)
+      // console.log(event.target.value)
+      console.log(event.target)
+      console.log(event.currentTarget)
+      dispatch({
+        type:SET_MEMO,
+        memo:event.currentTarget.value
+      })
     }
 
-    const [URL, setURL] =React.useState('')
+    //const [URL, setURL] =React.useState('')
     const handleURLChange = (event) => {
-      setURL(event.target.value)
+      dispatch({
+        type:SET_URL,
+        url:event.target.value
+      })
+      //setURL(event.target.value)
     }
     const [id, setId] =React.useState(0)
     // Checkbox関連のstate
-    const [allDayChecked, setChecked] = React.useState(false);
+    //const [allDayChecked, setChecked] = React.useState(false);
     // Checkboxの操作
     const handleCheckboxChange = (event) => {
-      
-      setChecked(event.target.checked)
+      dispatch({
+        type:SET_ALLDAYCHECKED,
+        allDayChecked:event.target.checked
+      })
+      //setChecked(event.target.checked)
       // console.log(allDayChecked)
     }
+
 
     // popoverclick
     // const handleClick = (event) => {
@@ -230,41 +265,45 @@ const CalenderForm = () => {
     //   setOpen(true)
     // }
 
-    const handleClickEdit = (e) => {
+    // const handleClickEdit = (e) => {
 
-      //setCurrentDate(e.currentTarget.value)
-      //画面表示する際、内容を表示させる。
-      (state.events.filter(event => event.id == e.currentTarget.value)).map((event) => {
-        setTitle(event.title)
-        setPlace(event.place)
-        setMemo(event.memo)
-        setURL(event.url)
-        setStartTime(event.startTime)
-        setEndTime(event.endTime)
-        setChecked(event.allDayChecked)
-        setId(event.id)
-        setCurrentDate(event.day)
-        }
-      )
-      setOpen(true)
-    }
+    //   //setCurrentDate(e.currentTarget.value)
+    //   //画面表示する際、内容を表示させる。
+    //   (state.events.filter(event => event.id == e.currentTarget.value)).map((event) => {
+    //     setTitle(event.title)
+    //     setPlace(event.place)
+    //     setMemo(event.memo)
+    //     setURL(event.url)
+    //     setStartTime(event.startTime)
+    //     setEndTime(event.endTime)
+    //     setChecked(event.allDayChecked)
+    //     setId(event.id)
+    //     setCurrentDate(event.day)
+    //     }
+    //   )
+    //   setOpen(true)
+    // }
 
     // pop画面を閉じる
     const handleClose = () => {
-      setOpen(false)
+      // setOpen(false)
+      dispatch({
+        type:SET_POPOVERSTATE,
+        popOverState:false
+      })
     }
 
-    const deleteOnClick = (e) => {
-      e.preventDefault()
-      if (window.confirm('削除します。よろしいですか？'))
-      {
-        console.log(e.currentTarget.value)
-        dispatch({
-          type:DELETE_EVENT,
-          id:e.currentTarget.value
-        })
-      }
-    }
+    // const deleteOnClick = (e) => {
+    //   e.preventDefault()
+    //   if (window.confirm('削除します。よろしいですか？'))
+    //   {
+    //     console.log(e.currentTarget.value)
+    //     dispatch({
+    //       type:DELETE_EVENT,
+    //       id:e.currentTarget.value
+    //     })
+    //   }
+    // }
 
     // pop画面からstateのeventsに登録する
     const handleSubscribe = () =>{
@@ -274,21 +313,25 @@ const CalenderForm = () => {
 
       dispatch({
         type:DELETE_EVENT,
-        id:id
+        id:state.inputEventObject.id
       })
 
       dispatch({
         type:CREATE_EVENT,
-        day:currentDate,
-        title:title,
-        place:place,
-        url:URL,
-        allDayChecked:allDayChecked,
-        startTime:startTime,
-        endTime:endTime,
-        memo:memo
+        day:state.inputEventObject.day,
+        title:state.inputEventObject.title,
+        place:state.inputEventObject.place,
+        url:state.inputEventObject.url,
+        allDayChecked:state.inputEventObject.allDayChecked,
+        startTime:state.inputEventObject.startTime,
+        endTime:state.inputEventObject.endTime,
+        memo:state.inputEventObject.memo
       })
-      setOpen(false)
+      // setOpen(false)
+      dispatch({
+        type:SET_POPOVERSTATE,
+        popOverState:false
+      })
     }
 
     const currenTitleOnKeyDown = (date,e) =>{
@@ -393,7 +436,7 @@ const CalenderForm = () => {
           </TableBody>
         </Table>
       </Paper> 
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <Dialog open={state.popOverState} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Input Plan</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -402,7 +445,8 @@ const CalenderForm = () => {
           <FormControlLabel
             control={
               <Checkbox
-                checked={allDayChecked}
+                //checked={allDayChecked}
+                checked={state.inputEventObject.allDayChecked}
                 onChange={handleCheckboxChange}
                 name="allDayCheckbox"
                 color="primary"
@@ -422,7 +466,7 @@ const CalenderForm = () => {
             inputProps={{
               step: 300, // 5 min
             }}
-            value ={startTime}
+            value ={state.inputEventObject.startTime}
             onChange={handleStartTimeChange}
           />
           <TextField
@@ -437,7 +481,7 @@ const CalenderForm = () => {
             inputProps={{
               step: 300, // 5 min
             }}
-            value = {endTime}
+            value = {state.inputEventObject.endTime}
             onChange={handleEndTimeChange}
           />
           <TextField
@@ -447,7 +491,7 @@ const CalenderForm = () => {
             label="Title"
             type="text"
             fullWidth
-            value={title}
+            value={state.inputEventObject.title}
             onChange={handleTitleChange}
           />
           <TextField
@@ -456,7 +500,7 @@ const CalenderForm = () => {
             label="Place"
             type="text"
             fullWidth
-            value={place}
+            value={state.inputEventObject.place}
             onChange={handlePlaceChange}
           />
           <TextField
@@ -467,7 +511,7 @@ const CalenderForm = () => {
             fullWidth
             multiline
             rowsMax={4}
-            value={memo}
+            value={state.inputEventObject.memo}
             onChange={handleMemoChange}
           />
           <TextField
@@ -489,7 +533,6 @@ const CalenderForm = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
     </>
     )
 }
