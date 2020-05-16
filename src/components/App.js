@@ -15,7 +15,17 @@ const App = () => {
   // 三項演算子（if文のショートカット、ローカルストレージがNULLの場合に初期値セット、ある場合はそれをJSONparseしてセット
   const initialState = appState ? JSON.parse(appState) : {
     events:[],
-    targetdate:new Date()
+    targetdate:new Date(),
+    inputEventObject:{
+      day:null,
+      title:'',
+      place:'',
+      url:'',
+      allDayChecked:false,
+      startTime:'00:00',
+      endTime:'00:00',
+      memo:''},
+      popOverState:false
   }
 
   const [state,dispatch]=useReducer(reducer,initialState)

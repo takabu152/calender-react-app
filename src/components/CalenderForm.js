@@ -44,6 +44,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import EventCardForm from './EventCardForm'
+
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -160,24 +162,14 @@ function CalendarTableCell(props) {
 const CalenderForm = () => {
     //prop経由だったstateとdispatchをコンテキストで受け取る 
     const {state,dispatch} = useContext(AppContext)
-    console.log(state)
-
-    
-
     const statetargetdate = Date.parse(state.targetdate)
-    
     const calendar = getCalendarArray(Date.parse(state.targetdate))
-
     const classes = useStyles() // 追加
-
-    const eventGridClasses = useEventGridStyles();
 
     // popover関連のstate
     const [open, setOpen] = React.useState(false);
     const [currentDate,setCurrentDate] = React.useState(null);
     const [currentTitle,setCurrentTitle] = React.useState('');
-    
-    
     const [startTime, setStartTime] = React.useState('00:00')
     const handleStartTimeChange = (event) => {
       console.log(event.target.value)
@@ -209,10 +201,7 @@ const CalenderForm = () => {
     const handleURLChange = (event) => {
       setURL(event.target.value)
     }
-
     const [id, setId] =React.useState(0)
-    
-    
     // Checkbox関連のstate
     const [allDayChecked, setChecked] = React.useState(false);
     // Checkboxの操作
@@ -372,31 +361,31 @@ const CalenderForm = () => {
                   <CalendarTableCell key={getDay(date)} wday={getDay(date)} isTargetMonth={isSameMonth(date, statetargetdate)} align="center" valign="top">
                     {getDate(date)}日
                     {(state.events.filter(event => event.day === timeIso8601(date))).map((event) => 
-                      <>
-                      <Card className={classes.root} key = {event.id}>
-                        <CardContent >
-                          <div hidden id = {event.id}>{event.id}</div>
-                          <Typography className={classes.card_title} color="textSecondary" gutterBottom >
-                            {event.title}
-                          </Typography> 
-                          {/* <Button size="small" color="primary" onClick={handleClickEdit} value={event.id}>detail</Button> */}
-                        </CardContent>
-                        <CardActions>
-                          <Button color="primary" value = {event.id} onClick={handleClickEdit}>
-                            detail
-                          </Button>
-                          <Button color="secondary" value ={event.id} onClick={deleteOnClick}>
-                            delete
-                          </Button>
-                        </CardActions>
-                      </Card>
-                      </>
+
+                      <EventCardForm id = {event.id} title = {event.title} />
+                      // <>
+                      // <Card className={classes.root} key = {event.id}>
+                      //   <CardContent >
+                      //     <div hidden id = {event.id}>{event.id}</div>
+                      //     <Typography className={classes.card_title} color="textSecondary" gutterBottom >
+                      //       {event.title}
+                      //     </Typography> 
+                      //     {/* <Button size="small" color="primary" onClick={handleClickEdit} value={event.id}>detail</Button> */}
+                      //   </CardContent>
+                      //   <CardActions>
+                      //     <Button color="primary" value = {event.id} onClick={handleClickEdit}>
+                      //       detail
+                      //     </Button>
+                      //     <Button color="secondary" value ={event.id} onClick={deleteOnClick}>
+                      //       delete
+                      //     </Button>
+                      //   </CardActions>
+                      // </Card>
+                      // </>
                       )
                     } 
                     {/* <Button  variant="outlined" size="small" className={classes.buttonMargin} variant="contained" value ={date} onClick={handleClickOpen}>+</Button> */}
                     <TextField id={format(date,'yyyyMMdd')} label="+" onKeyDown={(e) => currenTitleOnKeyDown(date, e)}/>
-                    <div>aaaaaa</div>
-                  
                   </CalendarTableCell>
                 ))}
               </TableRow>
